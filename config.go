@@ -17,6 +17,7 @@ type Config struct {
 	Min         int
 	Amount      int
 	Debug       bool
+	Skip        bool
 	RawDate     []byte
 }
 
@@ -30,6 +31,7 @@ func parseFlags() Config {
 	flag.IntVar(&cfg.Min, "min", 8, MinExplanation)
 	flag.IntVar(&cfg.Amount, "amount", 0, CommitAmountExplanation)
 	flag.BoolVar(&cfg.Debug, "debug", false, DebugExplanation)
+	flag.BoolVar(&cfg.Skip, "y", false, SkipExplanation)
 	date := flag.String("date", "", DateExplanation)
 
 	flag.Parse()

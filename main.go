@@ -2,12 +2,15 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
 	cfg := parseFlags()
+	ctx := context.Background()
 
 	if cfg.isDebug() {
 		fmt.Printf(
@@ -57,8 +60,27 @@ func main() {
 		)
 	}
 
-	_, err = Push(cfg)
-	if err != nil {
-		panic(fmt.Errorf("[ERROR] couldn't push to remote repository: %w", err))
+	switch {
+	case !cfg.Skip:
+		fmt.Printf("Do you want to push all %d changes? (y/n) ", cfg.Amount)
+		ans, err := scanLine(ctx)
+		if err != nil {
+			return
+		}
+
+		ans = strings.ToLower(strings.TrimSpace(ans))
+		if ans == "n" {
+			_, err = Reset(cfg)
+			if err != nil {
+				panic(fmt.Errorf("[ERROR] couldn't revert the changes: %w", err))
+			}
+			return
+		}
+		fallthrough
+	default:
+		_, err = Push(cfg)
+		if err != nil {
+			panic(fmt.Errorf("[ERROR] couldn't push to remote repository: %w", err))
+		}
 	}
 }

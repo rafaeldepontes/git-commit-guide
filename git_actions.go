@@ -66,6 +66,15 @@ func Push(cfg Config) ([]byte, error) {
 	return cmd.CombinedOutput()
 }
 
+// Reset revert the changes.
+func Reset(cfg Config) ([]byte, error) {
+	if cfg.isDebug() {
+		fmt.Printf("[DEBUG] reverting all %d changes\n", cfg.Amount)
+	}
+	cmd := exec.Command("git", "reset", "--soft", fmt.Sprintf("HEAD~%d", cfg.Amount))
+	return cmd.CombinedOutput()
+}
+
 // WriteDate only has access to 'data.json' and write access only.
 func WriteDate(cfg Config, f *os.File, date string) error {
 	if cfg.isDebug() {
